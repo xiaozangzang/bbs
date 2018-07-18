@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_user_liuyan" >
+  <select id="find" resultType="cc.javaee.bbs.model.UserLiuyan" parameterType="cc.javaee.bbs.model.UserLiuyan" >
+    select 
+    id, liuyanuserid, createuserid, createtime,contenthtml
+    from jbbs_user_liuyan
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="findByObject" resultType="map" parameterType="cc.javaee.bbs.model.UserLiuyan" >
+    SELECT t1.id, t1.liuyanuserid, t1.createuserid, t1.createtime,t1.contenthtml,t2.loginname,t2.img FROM jbbs_user_liuyan t1
+		LEFT JOIN jbbs_user t2 ON t1.createuserid=t2.id
+    where t1.liuyanuserid = #{liuyanuserid,jdbcType=INTEGER}
+    ORDER BY t1.createtime DESC
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from jbbs_user_liuyan
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cc.javaee.bbs.model.UserLiuyan" >
+    insert into jbbs_user_liuyan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="liuyanuserid != null" >
+        liuyanuserid,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="liuyanuserid != null" >
+        #{liuyanuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="contenthtml != null" >
+        #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="cc.javaee.bbs.model.UserLiuyan" >
+    update jbbs_user_liuyan
+    <set >
+      <if test="liuyanuserid != null" >
+        liuyanuserid = #{liuyanuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml = #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

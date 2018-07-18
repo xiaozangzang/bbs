@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_huifu" >
+  <select id="find" resultType="cc.javaee.bbs.model.Huifu" parameterType="cc.javaee.bbs.model.Huifu" >
+    select 
+    id, tieziid,huifuid, createtime, createuserid, lastupdate, isdel, orderby,contenthtml, contenttxt
+    from jbbs_huifu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="findpagecount" resultType="java.lang.Integer" parameterType="map" >
+    SELECT 
+	  count(1)
+	FROM
+	  jbbs_huifu t1 
+	  LEFT JOIN jbbs_user t2 
+	    ON t1.createuserid = t2.id 
+	  LEFT JOIN jbbs_group_user t3 
+	    ON t2.id = t3.userid 
+	  LEFT JOIN jbbs_group t4 
+	    ON t4.id = t3.groupid 
+     LEFT JOIN jbbs_jifen_group_user t8 
+   	    ON t2.id = t8.userid 
+     LEFT JOIN jbbs_jifen_group t9 
+        ON t9.id = t8.jifen_groupid 
+     LEFT JOIN jbbs_huifu pt1 
+  	    ON t1.huifuid = pt1.id
+     LEFT JOIN jbbs_user pt2 
+        ON pt1.createuserid = pt2.id
+    where t1.tieziid = #{bean.id,jdbcType=INTEGER}
+  </select>
+  <select id="findpage" resultType="map" parameterType="map" >
+    SELECT 
+	  t1.id,
+	  t1.tieziid,
+	  t1.huifuid,
+	  t1.contenthtml,
+	  t1.contenttxt,
+	  t1.createtime,
+	  t1.createuserid,
+	  t1.lastupdate,
+	  t1.isdel,
+	  t1.orderby,
+	  t2.id userid,
+	  t2.loginname,
+	  t2.img userimg,
+	  t2.jifen,
+	  t9.classname,
+	  (SELECT 
+	    COUNT(1) 
+	  FROM
+	    jbbs_tiezi tt3 
+	  WHERE tt3.createuserid = t2.id) tiezicount,
+	  (SELECT 
+	    COUNT(1) 
+	  FROM
+	    jbbs_huifu tt4 
+	  WHERE tt4.createuserid = t2.id) userhuifucount,
+	  t4.groupname,
+	  t4.id groupid ,
+	  pt1.contenthtml pcontenthtml,
+	  pt1.createtime pcreatetime,
+	  pt1.orderby porderby,
+	  pt1.isdel pisdel,
+	  pt2.loginname ploginname
+	FROM
+	  jbbs_huifu t1 
+	  LEFT JOIN jbbs_user t2 
+	    ON t1.createuserid = t2.id 
+	  LEFT JOIN jbbs_group_user t3 
+	    ON t2.id = t3.userid 
+	  LEFT JOIN jbbs_group t4 
+	    ON t4.id = t3.groupid 
+	   LEFT JOIN jbbs_jifen_group_user t8 
+    	ON t2.id = t8.userid 
+	  LEFT JOIN jbbs_jifen_group t9 
+	    ON t9.id = t8.jifen_groupid 
+	  LEFT JOIN jbbs_huifu pt1 
+	    ON t1.huifuid = pt1.id
+	  LEFT JOIN jbbs_user pt2 
+	    ON pt1.createuserid = pt2.id
+    where t1.tieziid = #{bean.id,jdbcType=INTEGER}
+    order by t1.orderby ${bean.orderby}
+    LIMIT ${pageNo}, ${pageSize}
+  </select>
+  
+  
+  
+  
+  <select id="maxobderby" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    SELECT COUNT(*)+1 FROM jbbs_huifu 
+    where tieziid = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from jbbs_huifu
+    where tieziid = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cc.javaee.bbs.model.Huifu" >
+    insert into jbbs_huifu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tieziid != null" >
+        tieziid,
+      </if>
+      <if test="huifuid != null" >
+        huifuid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+      <if test="lastupdate != null" >
+        lastupdate,
+      </if>
+      <if test="isdel != null" >
+        isdel,
+      </if>
+      <if test="orderby != null" >
+        orderby,
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml,
+      </if>
+      <if test="contenttxt != null" >
+        contenttxt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tieziid != null" >
+        #{tieziid,jdbcType=INTEGER},
+      </if>
+      <if test="huifuid != null" >
+        #{huifuid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="lastupdate != null" >
+        #{lastupdate,jdbcType=VARCHAR},
+      </if>
+      <if test="isdel != null" >
+        #{isdel,jdbcType=VARCHAR},
+      </if>
+      <if test="orderby != null" >
+        #{orderby,jdbcType=INTEGER},
+      </if>
+      <if test="contenthtml != null" >
+        #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contenttxt != null" >
+        #{contenttxt,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="cc.javaee.bbs.model.Huifu" >
+    update jbbs_huifu
+    <set >
+      <if test="tieziid != null" >
+        tieziid = #{tieziid,jdbcType=INTEGER},
+      </if>
+      <if test="huifuid != null" >
+        huifuid = #{huifuid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="lastupdate != null" >
+        lastupdate = #{lastupdate,jdbcType=VARCHAR},
+      </if>
+      <if test="isdel != null" >
+        isdel = #{isdel,jdbcType=VARCHAR},
+      </if>
+      <if test="orderby != null" >
+        orderby = #{orderby,jdbcType=INTEGER},
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml = #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contenttxt != null" >
+        contenttxt = #{contenttxt,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

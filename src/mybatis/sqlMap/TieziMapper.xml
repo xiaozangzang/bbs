@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_tiezi" >
+  
+  <!-- 更新帖子的访问次数 -->
+   <update id="updatefindcount" parameterType="int" >
+    update jbbs_tiezi set  findcount = findcount+1  where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!-- 更新帖子的最后回复id -->
+   <update id="updatetiezilasthuifuid" >
+   UPDATE jbbs_tiezi t1 SET t1.huifuid= (SELECT MAX(t2.id) FROM jbbs_huifu t2  WHERE t2.tieziid=t1.id AND isdel='0')
+	WHERE id IN (SELECT  tieziid FROM jbbs_huifu )
+	</update>
+  
+  
+  <select id="findbytieziwhere" resultType="cc.javaee.bbs.model.Tiezi" parameterType="cc.javaee.bbs.model.Tiezi" >
+    SELECT 
+	  t1.id,
+	  t1.NAME,
+	  t1.contenthtml,
+	  t1.contenttxt,
+	  t1.createtime,
+	  t1.createuserid,
+	  t1.bankuai_id bankuaiid,
+	  t1.zhutiid,
+	  t1.lastupdate,
+	  t1.jinghua,
+	  t1.zhiding,
+	  t1.findcount,
+	  t1.huifuid,
+	  t2.name bankuainame,
+	  t3.name zhutiname
+	FROM
+	  jbbs_tiezi t1 
+	  left join jbbs_bankuai t2 on t1.bankuai_id=t2.id
+	  left join jbbs_zhuti t3 on t1.zhutiid=t3.id
+	  where 1=1
+	<if test="id != null" >
+	   and t1.id = #{id,jdbcType=INTEGER}
+    </if>
+	<if test="name != null" >
+	   and t1.NAME = #{name,jdbcType=VARCHAR}
+    </if>
+	  
+  </select>
+  <select id="find" resultType="cc.javaee.bbs.model.Tiezi" parameterType="cc.javaee.bbs.model.Tiezi" >
+    SELECT 
+   	  t5.createtime huifucreatetime,
+	  t6.id huifuuserid,
+	  t6.loginname huifuusername,
+	  t7.id tieziuserid,
+	  t7.loginname tieziusername,
+	  t7.img tieziuserimg,
+	  t1.id,
+	  t1.name,
+	  t1.createtime,
+	  t1.createuserid,
+	  t1.bankuai_id bankuaiId,
+	  t1.contenthtml,
+	  t1.contenttxt,
+	  t1.jinghua,
+	  t1.zhiding,
+	  t1.findcount,
+	  t1.huifuid ,
+	  t2.name zhutiname ,
+	  t3.name bankuainame ,
+	  (SELECT COUNT(1) FROM jbbs_huifu WHERE tieziid = t1.id ) huifucount
+	FROM
+	  jbbs_tiezi t1 
+	  LEFT JOIN jbbs_zhuti t2   ON t1.zhutiid = t2.id 
+	  LEFT JOIN jbbs_bankuai t3 ON t3.id=t1.bankuai_id
+	  LEFT JOIN jbbs_huifu t5 
+    ON  t5.id = t1.huifuid 
+  LEFT JOIN jbbs_user t6 
+    ON t5.createuserid = t6.id 
+  LEFT JOIN jbbs_user t7 
+    ON t1.createuserid = t7.id 
+    where 1=1
+	   and ( t1.bankuai_id = #{bankuaiId,jdbcType=INTEGER}  and t1.zhiding in  ('1') )
+	   or t1.zhiding in  ('2')
+    order by t1.zhiding desc
+  </select>
+  
+  <select id="findbytiezi" resultType="map" parameterType="cc.javaee.bbs.model.Tiezi" >
+    SELECT 
+	  t1.id,
+	  t1.name,
+	  t1.createtime,
+	  t1.createuserid,
+	  t1.bankuai_id,
+	  t1.contenthtml,
+	  t1.contenttxt,
+	  t1.jinghua,
+	  t1.zhiding,
+	  t1.findcount,
+	  t1.huifuid,
+	  t1.lastupdate,
+	  t3.id zbankuaiid,
+	  t3.name zbankuainame,
+	  t3.fatiegroup,
+	  t3.huifugroup,
+	  t4.id fbankuaiid,
+	  t4.name fbankuainame,
+	  t2.id userid,
+	  t2.loginname,
+	  t2.img userimg,
+	  t2.jifen,
+	  t9.classname,
+	  (SELECT 
+	    COUNT(1) 
+	  FROM
+	    jbbs_huifu 
+	  WHERE createuserid = t2.id) userhuifucount,
+	  (SELECT 
+	    COUNT(1) 
+	  FROM
+	    jbbs_tiezi tt3 
+	  WHERE tt3.createuserid = t2.id) tiezicount,
+	  (SELECT 
+	    COUNT(1) 
+	  FROM
+	    jbbs_huifu 
+	  WHERE tieziid = t1.id) huifucount,
+	  t6.groupname,
+	  t6.id groupid,
+	  t7.name zhutiname,
+	  t7.id zhutiid 
+	FROM
+	  jbbs_tiezi t1 
+	  LEFT JOIN jbbs_user t2 
+	    ON t1.createuserid = t2.id 
+	  LEFT JOIN jbbs_bankuai t3 
+	    ON t1.bankuai_id = t3.id 
+	  LEFT JOIN jbbs_bankuai t4 
+	    ON t4.id = t3.parentid 
+	  LEFT JOIN jbbs_group_user t5 
+	    ON t2.id = t5.userid 
+	  LEFT JOIN jbbs_group t6 
+	    ON t6.id = t5.groupid 
+	  LEFT JOIN jbbs_zhuti t7 
+	    ON t1.zhutiid = t7.id 
+	  LEFT JOIN jbbs_jifen_group_user t8 
+	    ON t2.id = t8.userid 
+	  LEFT JOIN jbbs_jifen_group t9 
+	    ON t9.id = t8.jifen_groupid 
+	WHERE 1 = 1 
+    <if test="id != null" >
+	   and t1.id = #{id,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  
+  
+  
+  
+  
+  
+  <!-- 查询当日总条数 -->
+  <select id="findnowcount" resultType="java.lang.Integer" parameterType="cc.javaee.bbs.model.Tiezi" >
+    select  count(*) 
+    from jbbs_tiezi t1 
+    where 1=1
+    <if test="bankuaiId != null" >
+	   and t1.bankuai_id = #{bankuaiId,jdbcType=INTEGER}
+    </if>
+    <if test="createtime != null" >
+	   and t1.createtime > '${createtime}'
+    </if>
+  </select>
+  
+  <!-- 查询总条数 -->
+  <select id="findpagecount" resultType="java.lang.Integer" parameterType="cc.javaee.bbs.model.Tiezi" >
+    select  count(*) 
+    from 
+    	jbbs_tiezi t1 
+	  LEFT JOIN jbbs_zhuti t2   ON t1.zhutiid = t2.id 
+	  LEFT JOIN jbbs_bankuai t3 ON t3.id=t1.bankuai_id
+	  LEFT JOIN jbbs_huifu t5 
+    ON  t5.id = t1.huifuid 
+  LEFT JOIN jbbs_user t6 
+    ON t5.createuserid = t6.id 
+  LEFT JOIN jbbs_user t7 
+    ON t1.createuserid = t7.id 
+    where 1=1
+    <if test="bean.bankuaiId != null" >
+	   and t1.bankuai_id = #{bean.bankuaiId,jdbcType=INTEGER}
+    </if> 
+    <if test="bean.zhutiid != null" >
+	   and t1.zhutiid = #{bean.zhutiid,jdbcType=INTEGER}
+    </if>
+    <if test="bean.createuserid != null" >
+	   and t1.createuserid = #{bean.createuserid,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="findpage" resultType="cc.javaee.bbs.model.Tiezi" parameterType="cc.javaee.bbs.model.Tiezi" >
+    SELECT 
+   	  t5.createtime huifucreatetime,
+	  t6.id huifuuserid,
+	  t6.loginname huifuusername,
+	  t7.id tieziuserid,
+	  t7.loginname tieziusername,
+	  t7.img tieziuserimg,
+	  t1.id,
+	  t1.name,
+	  t1.createtime,
+	  t1.createuserid,
+	  t1.bankuai_id bankuaiId,
+	  t1.contenthtml,
+	  t1.contenttxt,
+	  t1.jinghua,
+	  t1.zhiding,
+	  t1.findcount,
+	  t1.huifuid ,
+	  t2.name zhutiname ,
+	  t3.name bankuainame ,
+	  (SELECT COUNT(1) FROM jbbs_huifu WHERE tieziid = t1.id ) huifucount
+	FROM
+	  jbbs_tiezi t1 
+	  LEFT JOIN jbbs_zhuti t2   ON t1.zhutiid = t2.id 
+	  LEFT JOIN jbbs_bankuai t3 ON t3.id=t1.bankuai_id
+	  LEFT JOIN jbbs_huifu t5 
+    ON  t5.id = t1.huifuid 
+  LEFT JOIN jbbs_user t6 
+    ON t5.createuserid = t6.id 
+  LEFT JOIN jbbs_user t7 
+    ON t1.createuserid = t7.id 
+    where 1=1
+    <if test="bean.bankuaiId != null" >
+	   and t1.bankuai_id = #{bean.bankuaiId,jdbcType=INTEGER}
+    </if> 
+    <if test="bean.zhutiid != null" >
+	   and t1.zhutiid = #{bean.zhutiid,jdbcType=INTEGER}
+    </if>
+    <if test="bean.createuserid != null" >
+	   and t1.createuserid = #{bean.createuserid,jdbcType=INTEGER}
+    </if>
+    <!-- 板块页面排序使用 -->
+    <if test="bean.orderby != null" >
+	  ORDER BY ${bean.orderby} desc
+    </if>
+    <if test="bean.orderby == null" >
+     ORDER BY t1.id desc
+    </if>
+    
+    LIMIT ${pageNo}, ${pageSize}
+  </select>
+  
+  
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    <!--
+      WARNING - @mbggenerated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      This element was generated on Thu May 04 11:17:31 CST 2017.
+    -->
+    delete from jbbs_tiezi
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cc.javaee.bbs.model.Tiezi" >
+    <!--
+      WARNING - @mbggenerated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      This element was generated on Thu May 04 11:17:31 CST 2017.
+    -->
+    insert into jbbs_tiezi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+      <if test="bankuaiId != null" >
+        bankuai_id,
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml,
+      </if>
+      <if test="contenttxt != null" >
+        contenttxt,
+      </if>
+      <if test="zhutiid != null" >
+        zhutiid,
+      </if>
+      <if test="lastupdate != null" >
+        lastupdate,
+      </if>
+      <if test="jinghua != null" >
+        jinghua,
+      </if>
+      <if test="zhiding != null" >
+        zhiding,
+      </if>
+      <if test="findcount != null" >
+        findcount,
+      </if>
+      <if test="huifuid != null" >
+        huifuid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="bankuaiId != null" >
+        #{bankuaiId,jdbcType=INTEGER},
+      </if>
+      <if test="contenthtml != null" >
+        #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contenttxt != null" >
+        #{contenttxt,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="zhutiid != null" >
+        #{zhutiid,jdbcType=VARCHAR},
+      </if>
+      <if test="lastupdate != null" >
+        #{lastupdate,jdbcType=VARCHAR},
+      </if>
+      <if test="jinghua != null" >
+        #{jinghua,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiding != null" >
+        #{zhiding,jdbcType=VARCHAR},
+      </if>
+      <if test="findcount != null" >
+        #{findcount,jdbcType=INTEGER},
+      </if>
+      <if test="huifuid != null" >
+        #{huifuid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="cc.javaee.bbs.model.Tiezi" >
+    <!--
+      WARNING - @mbggenerated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      This element was generated on Thu May 04 11:17:31 CST 2017.
+    -->
+    update jbbs_tiezi
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="bankuaiId != null" >
+        bankuai_id = #{bankuaiId,jdbcType=INTEGER},
+      </if>
+      <if test="contenthtml != null" >
+        contenthtml = #{contenthtml,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contenttxt != null" >
+        contenttxt = #{contenttxt,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="createtime != null" >
+        zhutiid = #{zhutiid,jdbcType=VARCHAR},
+      </if>
+      <if test="lastupdate != null" >
+        lastupdate =CONCAT(IFNULL(lastupdate,''),'${lastupdate}'),
+      </if>
+      <if test="jinghua != null" >
+        jinghua = #{jinghua,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiding != null" >
+        zhiding = #{zhiding,jdbcType=VARCHAR},
+      </if>
+      <if test="findcount != null" >
+        findcount = #{findcount,jdbcType=INTEGER},
+      </if>
+      <if test="huifuid != null" >
+        huifuid = #{huifuid,jdbcType=INTEGER},
+      </if>
+      <if test="zhutiid != null" >
+        zhutiid = #{zhutiid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

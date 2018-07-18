@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_link" >
+  <select id="find" resultType="cc.javaee.bbs.model.Link" parameterType="cc.javaee.bbs.model.Link" >
+    select 
+    t2.name username, t1.id, t1.name, t1.link, t1.createuserid, t1.createtime, t1.orderby, t1.bankuaiid, t1.img,t1.isshow, t1.type
+    from jbbs_link t1
+    left join jbbs_user t2 on t1.createuserid=t2.id
+    where  1=1
+    <if test="id != null" >
+        and t1.id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="createuserid != null" >
+        and t1.createuserid = #{createuserid,jdbcType=INTEGER}
+    </if>
+    <if test="isshow != null" >
+        and t1.isshow = #{isshow,jdbcType=VARCHAR}
+    </if>
+    order by t1.orderby 
+  </select>
+  
+  <select id="findmaxorderby" resultType="java.lang.Integer" parameterType="cc.javaee.bbs.model.Link" >
+    select 
+    count(1)
+    from jbbs_link
+  </select>
+  
+  <select id="findpage" resultType="cc.javaee.bbs.model.Link" parameterType="cc.javaee.bbs.model.Link" >
+   SELECT
+   	  t2.name username,
+	  t1.id,
+	  t1.name,
+	  t1.link,
+	  t1.createuserid,
+	  t1.createtime,
+	  t1.orderby,
+	  t1.bankuaiid,
+	  t1.img,
+	  t1.isshow,
+	  t1.type
+	FROM jbbs_link t1 
+	left join jbbs_user t2 on t1.createuserid=t2.id
+ where 1=1 
+    <if test="bean.id != null" >
+        and t1.id = #{bean.id,jdbcType=INTEGER}
+    </if>
+    <if test="bean.createuserid != null" >
+        and t1.createuserid = #{bean.createuserid,jdbcType=INTEGER}
+    </if>
+    ORDER BY t1.isshow DESC ,t1.orderby DESC
+    LIMIT ${pageNo}, ${pageSize}
+  </select>
+  
+  
+  <select id="findpagecount" resultType="java.lang.Integer" parameterType="cc.javaee.bbs.model.Link" >
+    select 
+    count(*)
+    from jbbs_link t1 
+    left join jbbs_user t2 on t1.createuserid=t2.id
+    where 1=1 
+    <if test="bean.id != null" >
+        and t1.id = #{bean.id,jdbcType=INTEGER}
+    </if>
+    <if test="bean.createuserid != null" >
+        and t1.createuserid = #{bean.createuserid,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from jbbs_link
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cc.javaee.bbs.model.Link" >
+    insert into jbbs_link
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="link != null" >
+        link,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="orderby != null" >
+        orderby,
+      </if>
+      <if test="bankuaiid != null" >
+        bankuaiid,
+      </if>
+      <if test="img != null" >
+        img,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="isshow != null" >
+        isshow,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="link != null" >
+        #{link,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="orderby != null" >
+        #{orderby,jdbcType=INTEGER},
+      </if>
+      <if test="bankuaiid != null" >
+        #{bankuaiid,jdbcType=INTEGER},
+      </if>
+      <if test="img != null" >
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isshow != null" >
+        #{isshow,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="cc.javaee.bbs.model.Link" >
+    update jbbs_link
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="link != null" >
+        link = #{link,jdbcType=VARCHAR},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=VARCHAR},
+      </if>
+      <if test="orderby != null" >
+        orderby = #{orderby,jdbcType=INTEGER},
+      </if>
+      <if test="bankuaiid != null" >
+        bankuaiid = #{bankuaiid,jdbcType=INTEGER},
+      </if>
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="isshow != null" >
+        isshow = #{isshow,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

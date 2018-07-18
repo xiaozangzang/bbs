@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <display-name></display-name>
+  <filter>
+    <filter-name>SpringCharacterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>SpringCharacterEncodingFilter</filter-name>
+    <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  <servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:config/springmvc-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+ <!--  <servlet-mapping>  
+    <servlet-name>default</servlet-name>  
+    <url-pattern>/admin/*</url-pattern>  
+    <url-pattern>/css/*</url-pattern>  
+    <url-pattern>/js/*</url-pattern>  
+    <url-pattern>/public/*</url-pattern>  
+    <url-pattern>/static/*</url-pattern>  
+    <url-pattern>/statics/*</url-pattern>  
+</servlet-mapping>  -->
+	<!-- 公共的拦截器  拦截所有 -->
+	<filter>
+		<filter-name>CommonFilter</filter-name>
+		<filter-class>cc.javaee.bbs.filter.CommonFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CommonFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:config/beans.xml</param-value>
+  </context-param>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+  <welcome-file-list>
+    <welcome-file>index.do</welcome-file>
+  </welcome-file-list>
+</web-app>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_common" >
+  <!-- &lt;   <    &gt;  > -->
+  
+  <!-- 查询首页的今天帖子数，昨天帖子数 总数 用户总数 最近一次注册的用户信息 -->
+  <select id="indextongji" resultType="map" parameterType="map" >
+  	SELECT 
+		(SELECT COUNT(*) FROM jbbs_tiezi WHERE createtime > #{nowdate} ) tttiezi,
+		(SELECT COUNT(*) FROM jbbs_tiezi WHERE createtime > #{qnowdate} AND  createtime &lt; #{nowdate} ) zttiezi,
+		(SELECT COUNT(*) FROM jbbs_tiezi) ztiezi,
+		(SELECT COUNT(*) FROM jbbs_user) zuser,
+		(SELECT MAX(id) FROM jbbs_user) userid,
+		(SELECT loginname FROM jbbs_user WHERE id=(SELECT MAX(id) FROM jbbs_user)) username
+		FROM DUAL 
+    where 1=1
+    <!-- <if test="parentId != null" >
+        and (t1.parentId = #{parentId,jdbcType=INTEGER} or  t1.id = #{parentId,jdbcType=INTEGER})
+    </if> -->
+  </select>
+  <!-- 查询最新帖子7条记录，最近回复的7条记录，最近回复的7条记录 -->
+  <select id="ztiezi" resultType="map" parameterType="map" >
+  	SELECT aaa.id,aaa.name,aaa.flag FROM (SELECT *,'1' flag FROM jbbs_tiezi ORDER BY id DESC LIMIT 0,7 )aaa
+  	
+	UNION ALL 
+	
+	SELECT bbb.id,bbb.name,bbb.flag FROM (
+	SELECT t1.*,'2' flag FROM
+  jbbs_tiezi t1 
+LEFT JOIN (SELECT tieziid ,MAX(createtime) huifucreatetime FROM  jbbs_huifu 
+    GROUP BY tieziid )   t2 ON t2.tieziid=t1.id 
+    ORDER BY t2.huifucreatetime DESC LIMIT 0, 7)bbb
+		
+	UNION ALL 
+	
+	SELECT ccc.id,ccc.name,ccc.flag FROM  (
+	SELECT (SELECT COUNT(1) FROM jbbs_huifu tt1 WHERE t1.id= tt1.tieziid )counts ,t1.*,'3' flag FROM jbbs_tiezi t1 WHERE t1.createtime > ${zdate}  ORDER BY counts DESC LIMIT 0,7
+	) ccc
+  </select>
+  
+</mapper>

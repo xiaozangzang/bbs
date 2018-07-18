@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC
+"-//mybatis.org//DTD MyBatis Generator Configuration 
+1.0//EN"
+"http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+	<!-- 制定mysql的驱动包的路径 千万别放中文路径下 -->
+	<classPathEntry location="F:\bbs\bbs\bbs\WebRoot\WEB-INF\lib\mysql-connector-java-5.1.25-bin.jar" />
+	<!-- 配置数据源和生成的代码所存放的位置 -->
+	<context id="context1">
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://127.0.0.1:3306/bbs?useUnicode=true&amp;characterEncoding=utf8" 
+			userId="root" password="root" />
+		<!-- 所生成的实体类的位置默认资源包src -->
+		<javaModelGenerator targetPackage="cc.javaee.bbs.model" targetProject="bbs" />
+		<!-- 所生成的sqlMap的影射文件的位置,默认资源包src -->
+		<sqlMapGenerator targetPackage="mybatis.sqlMap" targetProject="bbs" />
+		
+		<!-- 为哪些表生成代码 tableName:表名 schema:不用填写 -->
+		
+		<table schema="" tableName="jbbs_user_liuyan" domainObjectName="UserLiuyan"
+    enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+    enableSelectByExample="false" selectByExampleQueryId="false">
+		</table>
+	</context>
+</generatorConfiguration>

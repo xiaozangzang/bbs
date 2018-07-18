@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jbbs_info" >
+  
+  <select id="find" resultType="cc.javaee.bbs.model.Info" parameterType="int" >
+    SELECT
+	  id,
+	  indextitle,
+	  NAME,
+	  keywords,
+	  description,
+	  logoimg,
+	  foothtml
+	FROM jbbs_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <update id="update" parameterType="cc.javaee.bbs.model.Info" >
+    update jbbs_info
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="indextitle != null" >
+        indextitle = #{indextitle,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="logoimg != null" >
+        logoimg = #{logoimg,jdbcType=VARCHAR},
+      </if>
+      <if test="foothtml != null" >
+        foothtml = #{foothtml,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
